@@ -29,4 +29,6 @@ Route::group([
     Route::post('refresh', [App\Http\Controllers\AuthController::class, 'refresh']);
     Route::post('me', [App\Http\Controllers\AuthController::class, 'me']);
 
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.show');
 });
+

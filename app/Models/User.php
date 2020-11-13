@@ -42,6 +42,74 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(
+            function($user){
+                $user->account()->create([
+                    'user_id' => $user->id
+                ]);
+
+                $user->billingInformation()->create([
+                    'user_id' => $user->id
+                ]);
+
+                $user->mailing()->create([
+                    'user_id' => $user->id
+                ]);
+            }
+        );
+
+        /*static::created(
+            function ($user){
+                $user->billingInformation()->create([
+                    'user_id' => $user->id
+                ]);
+            }
+        );
+
+        static::created(
+            function ($user){
+                $user->mailing()->create([
+                    'user_id' => $user->id
+                ]);
+            }
+        );*/
+    }
+
+    public function account()
+    {
+        return $this->hasOne(Account::class);
+    }
+
+    public function billingInformation()
+    {
+        return $this->hasOne(BillingInformation::class);
+    }
+
+    public function mailing()
+    {
+        return $this->hasOne(MailingInformation::class);
+    }
+
+
+    /*public function devices()
+    {
+        return $this->hasMany(Device::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }*/
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -52,8 +120,10 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims()
+     public function getJWTCustomClaims()
     {
         return [];
     }
+
+
 }
