@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 
 class BillingInformationController extends Controller
 {
-    public function index(User $user)
+
+
+    public function BillingInfoIndex()
     {
-        return view('dashboard', compact('user'));
+        return response()->json(auth()->user()->billing);
     }
 
     public function edit(User $user)

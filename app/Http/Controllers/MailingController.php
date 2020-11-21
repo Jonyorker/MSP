@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class MailingController extends Controller
 {
+
     public function index(User $user)
     {
         return view('dashboard', compact('user'));

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,17 +19,31 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+/*Route::group([
+    'middleware' => 'api'
+], function ($router){
+    Route::post('register', [App\Http\Controllers\Auth\LoginController::class,'register']);
+});*/
+
+
 Route::group([
 
     'middleware' => 'api',
     'prefix' => 'auth'
 
 ], function ($router) {
+    Route::post('register', [App\Http\Controllers\Auth\LoginController::class,'register']);
     Route::post('login', [App\Http\Controllers\AuthController::class, 'login']);
     Route::post('logout', [App\Http\Controllers\AuthController::class, 'logout']);
     Route::post('refresh', [App\Http\Controllers\AuthController::class, 'refresh']);
     Route::post('me', [App\Http\Controllers\AuthController::class, 'me']);
+    Route::post('billingInformation', [App\Http\Controllers\AuthController::class, 'billingInformation']);
 
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.show');
+    Route::group([
+        'prefix' => 'billing'
+        ], function($router){
+        Route::post('BillingInfoIndex', 'BillingInformationController@BillingInfoIndex');
+    });
 });
+
 
