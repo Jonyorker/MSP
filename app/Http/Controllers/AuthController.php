@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -57,7 +56,7 @@ class AuthController extends Controller
 
         $user = User::create(array_merge(
             $validator->validated(),
-            ['password' => bcrypt($request->password)]
+            ['password' => Hash::make($request->password)]
         ));
 
         return response()->json([
@@ -73,7 +72,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user()->mailing);
+        return response()->json(auth()->user());
     }
 
     /**
@@ -111,11 +110,11 @@ class AuthController extends Controller
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken(string $token)
     {
         return response()->json([
             'access_token' => $token,
