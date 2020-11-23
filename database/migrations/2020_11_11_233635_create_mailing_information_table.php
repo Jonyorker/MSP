@@ -22,9 +22,7 @@ class CreateMailingInformationTable extends Migration
             $table->string('province')->nullable();
             $table->string('country')->nullable();
             $table->string('postalCode')->nullable();
-            $table->string('phoneNumber')->nullable();
-            $table->string('mobileNumber')->nullable();
-            $table->string('specialNotes')->nullable();
+
             $table->timestamps();
 
             $table->index('user_id');

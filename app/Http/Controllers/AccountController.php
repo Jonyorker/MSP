@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use phpDocumentor\Reflection\Types\Nullable;
 
 class AccountController extends Controller
 {
@@ -43,7 +41,7 @@ class AccountController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        Account::where('user_id', auth()->user()->id)->update($request->all());
+        auth()->user()->account->update($request->all());
 
         return response()->json([
             'message' => 'User information successfully updated',

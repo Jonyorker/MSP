@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class BillingInformationController extends Controller
 {
 
-
-    public function BillingInfoIndex()
+    public function __construct()
     {
-        return response()->json(auth()->user()->billing);
+        $this->middleware('auth:api');
     }
 
     public function edit(User $user)
@@ -21,19 +21,19 @@ class BillingInformationController extends Controller
         return view('billing.edit', compact('user'));
     }
 
-    public function update(User $user)
-    {
-        //$this->authorize('update', $user->billing);
-
-        $data = request()->validate([
+    public function update(Request $request) {
+        $validator = Validator::make($request->all(), [
             'credit_card_number' => ['string'],
             'cvs' => ['string'],
             'expiry_date' => ['date'],
             'type' => ['string'],
         ]);
 
-        auth()->user()->billinginformation->update($data);
+        auth()->user()->billinginformation->update($request->all());
 
-        return redirect('/dashboard/' . auth()->user()->id);
+        return response()->json([
+            'message' => 'Users billing information successfully updated',
+            'Account information: ' => auth()->user()->billinginformation
+        ], 201);
     }
 }

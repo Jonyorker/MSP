@@ -32,6 +32,9 @@ Route::middleware('auth:api')->get('/mailing', function (Request $request) {
 
 Route::post('accountInformation', [App\Http\Controllers\AccountController::class, 'update']);
 
+Route::post('mailingUpdate', [App\Http\Controllers\MailingController::class, 'update']);
+
+Route::post('billingInfoUpdate', [App\Http\Controllers\BillingInformationController::class, 'update']);
 
 /*Route::group([
     'middleware' => 'api'
