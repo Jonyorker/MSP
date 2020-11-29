@@ -2,84 +2,132 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TicketController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct()
     {
-        //
+        $this->middleware('auth:api');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function unassignedTickets(Request $request){
+
+        $tickets = Ticket::where('status', $request->status)->get();
+
+        return response()->json([
+            'message' => 'Unassigned tickets',
+            'Unassigned Tickets: ' => $tickets
+        ], 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    public function assignedTickets(Request $request){
+
+        $tickets = Ticket::where('status', $request->status)->get();
+
+        return response()->json([
+            'message' => 'Assigned tickets',
+            'Unassigned Tickets: ' => $tickets
+        ], 201);
+    }
+
+    public function completedTickets(Request $request){
+
+        $tickets = Ticket::where('status', $request->status)->get();
+
+        return response()->json([
+            'message' => 'Completed tickets',
+            'Unassigned Tickets: ' => $tickets
+        ], 201);
+    }
+
+
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'device_id' => ['string'],
+            'description' => ['string'],
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        auth()->user()->tickets()->create(array_merge(
+            $request->all(),
+            ['status' => 'submitted'],
+        ));
+
+        return response()->json([
+            'message' => 'Submitted a ticket',
+            'Device information: ' => auth()->user()->tickets
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Ticket $ticket)
+    public function edit(Request $request)
     {
-        //
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Ticket $ticket)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Ticket $ticket)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'device_id' => ['string'],
+            'description' => ['string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $ticket = Ticket::find($request->id);
+
+        $ticket->description = $request->description;
+
+        $ticket->save();
+
+        //auth()->user()->devices()->update($request->all());
+
+        return response()->json([
+            'message' => 'Updated ticket ' . $ticket,
+            'Ticket information: ' => $ticket
+        ], 201);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Ticket $ticket)
+    public function assign(Request $request)
     {
-        //
+        $ticket = Ticket::find($request->id);
+
+        $ticket->assignedTo = $request->assignedTo;
+        $ticket->status = 'assigned';
+
+        $ticket->save();
+
+        //auth()->user()->devices()->update($request->all());
+        $name = User::find($request->assignedTo);
+        return response()->json([
+            'message' => 'Ticket assigned to ' . $name->name,
+            'Ticket information: ' => $ticket
+        ], 201);
+    }
+
+    public function completeTicket(Request $request)
+    {
+        $ticket = Ticket::find($request->id);
+
+        $ticket->status = 'completed';
+
+        $ticket->save();
+
+        //auth()->user()->devices()->update($request->all());
+
+        return response()->json([
+            'message' => 'Ticket completed ' . User::find($ticket->assignedTo)->name,
+            'Ticket information: ' => $ticket
+        ], 201);
     }
 }
