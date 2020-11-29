@@ -21,6 +21,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'user_role',
     ];
 
     /**
@@ -49,7 +50,12 @@ class User extends Authenticatable implements JWTSubject
         static::created(
             function($user){
                 $user->account()->create([
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
+                    'first_name' => request()->first_name,
+                    'last_name' => request()->last_name,
+                    'date_of_birth' => request()->date_of_birth,
+                    'gender' => request()->gender,
+                    'phone_number' => request()->phone_number,
                 ]);
 
                 $user->billingInformation()->create([
@@ -95,7 +101,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    /*public function devices()
+    public function devices()
     {
         return $this->hasMany(Device::class);
     }
@@ -105,7 +111,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Ticket::class);
     }
 
-    public function subscriptions()
+    /*public function subscriptions()
     {
         return $this->hasMany(Subscription::class);
     }*/

@@ -45,19 +45,20 @@ class AuthController extends Controller
      */
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
+            'role' => 'string|nullable',
         ]);
 
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $user = User::create(array_merge(
-            $validator->validated(),
-            ['password' => Hash::make($request->password)]
-        ));
+        $user = User::create([
+            'user_role' => $request->user_role,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
         return response()->json([
             'message' => 'User successfully registered',
@@ -68,11 +69,27 @@ class AuthController extends Controller
     /**
      * Get the authenticated User.
      *
+     * @param Request $request
      * @return JsonResponse
      */
-    public function me()
+    public function changePassword(Request $request)
     {
-        return response()->json(auth()->user());
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|confirmed|min:6',
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        auth()->user()->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'message' => 'Successfully updated password',
+            'user' => auth()->user()
+        ], 201);
     }
 
     /**
