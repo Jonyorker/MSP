@@ -23,6 +23,9 @@ class CreateAccountsTable extends Migration
             $table->string('phone_number')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('specialNotes')->nullable();
+            $table->string('ISP')->nullable();
+            $table->string('internet_plan')->nullable();
+            $table->string('internet_connection_type')->nullable();
             $table->timestamps();
 
             $table->index('user_id');

@@ -64,9 +64,9 @@ class AccountController extends Controller
 
         //dd($user);
 
-        auth()->user()->accountinformation->update($data);
+        //auth()->user()->account->update($data);
 
-        auth()->user()->accountinformation()->create([
+        auth()->user()->account()->create([
             //'user_id' => auth()->user()->id,
             'address_number' => $data['address_number'],
             'address' => $data['address'],
